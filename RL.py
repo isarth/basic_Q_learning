@@ -13,7 +13,7 @@ end_terminal=cliff_states+[goal_state]
 dlf_reward=-1
 cliff_reward=-100
 goal_reward=100
-alpha=0.25
+alpha=0.1
 gamma=0.9
 moves={'<':state(0,-1),'>':state(0,1),'^':state(-1,0),'v':state(1,0)}
 
@@ -104,7 +104,7 @@ class Cliffword:
             r_=self.reward_vs_pos(s_)
             #a_=alpha*[r_+gamma*]
             q_best=self.seek_q(s_)
-            self.Q[s][a]=self.Q[s][a]+alpha*(r_+gamma*q_best+self.Q[s][a])
+            self.Q[s][a]=self.Q[s][a]+alpha*(r_+gamma*q_best-self.Q[s][a])
             s=s_
     def best_run(self):
         s=state(0,0)
@@ -115,15 +115,16 @@ class Cliffword:
                 return path
             qm=[self.Q[s][i] for i in (mo)]
             qm=np.array(qm)
-            mov=np.random.choice(self.Q[s].keys(),p=qm.ravel())
+            mov=mo[np.argmax(qm)]
             s=state(s.m+moves[mov].m,s.n+moves[mov].n)
             path.append(mov)
-            #print mo[qm.argmax()]
+            print mo[qm.argmax()]
         print path
 
 
 clif=Cliffword()
-for i in range(1000):
+for i in range(10000):
     clif.train()
-#print clif.Q[state(m=1,n=11)]
+print clif.Q[state(m=0,n=0)]
+print clif.Q[state(m=1,n=0)]
 clif.best_run()
